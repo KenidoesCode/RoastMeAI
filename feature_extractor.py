@@ -1,30 +1,30 @@
 import cv2
 import numpy as np
-from fer import FER
-
-detector = FER()
+from deepface import DeepFace
 
 def get_emotion(img):
-    res = detector.detect_emotions(img)
-    if not res:
+    try:
+        result = DeepFace.analyze(img, actions=['emotion'], enforce_detection=False)
+        return result['dominant_emotion']
+    except:
         return None
-    return max(res[0]['emotions'], key=res[0]['emotions'].get)
 
 def extract_features(img):
-    """ Fake all non-emotion features (safe for cloud). """
 
     emotion = get_emotion(img)
 
-    # fallback if no detection
     if emotion is None:
         return None
 
-    return {
+    # Fake the other features (simple heuristics or defaults)
+    features = {
         "emotion": emotion,
-        "skin": "oily",       # placeholder
+        "skin": "oily",
         "eye_state": "sleepy",
-        "face_shape": "round",
+        "face_shape": "other",
         "hairline": "normal",
         "ethnicity": "south_asian",
         "pose": "close"
     }
+
+    return features
