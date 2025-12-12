@@ -1,17 +1,14 @@
-import cv2
 import numpy as np
-from fer import FER
-
-# FER emotion detector
-detector = FER()
+from deepface import DeepFace
 
 def get_emotion(img):
     try:
-        res = detector.detect_emotions(img)
-        if not res:
-            return None
-        emotions = res[0]["emotions"]
-        return max(emotions, key=emotions.get)
+        result = DeepFace.analyze(
+            img, 
+            actions=['emotion'], 
+            enforce_detection=False
+        )
+        return result['dominant_emotion']
     except:
         return None
 
@@ -21,7 +18,6 @@ def extract_features(img):
     if emotion is None:
         return None
 
-    # Simple static features for roasting engine
     return {
         "emotion": emotion,
         "skin": "oily",
